@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import AddPerson from './components/Addperson';
 import Filter from './components/Filter';
 import MapPerson from './components/MapPerson';
+import axios from 'axios'
 
 
 function App() {
-  const contacts = [{ name: 'Arto Hellas',
-  number: '098-23435'
- }, { name: 'Heys Reils', 
-number: '087-2345'}]
-  const [person, setPerson]= useState(contacts)
+  const [person, setPerson]= useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber]=useState('')
-
+ const hook=()=>{
+   axios.get('http://localhost:3001/contacts')
+   .then(response=>{
+     setPerson(response.data)
+   })
+ }
+  useEffect(hook, [])
   const handleNameChange=(e)=>{
     e.preventDefault()
     setNewName(e.target.value)
@@ -45,13 +48,9 @@ number: '087-2345'}]
   }
   const handleFilter=(e)=>{
     const filterValue = e.target.value
-    if(filterValue===''){
-      setPerson(contacts)
-    }else{
   const filtered = person.filter(p=> p.name.startsWith(filterValue))
     setPerson(filtered)
-    }
-  }
+}
   return (
     <div>
       <h2>Phonebook</h2>
