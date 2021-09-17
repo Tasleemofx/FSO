@@ -2,7 +2,7 @@
   "contacts": [
     {
       "name": "Arto Hellas",
-      "number": "890765432345",
+      "number": "78-96-54325678",
       "id": 67
     },
     {
@@ -19,6 +19,26 @@
       "name": "Mary Poppendieck",
       "number": "39-23-6423122",
       "id": 40
+    },
+    {
+      "name": "Alexis Sanchez",
+      "number": "908765490876",
+      "id": 68
+    },
+    {
+      "name": "David Bentley",
+      "number": "09876540987",
+      "id": 4
+    },
+    {
+      "name": "Khaliq Waseen",
+      "number": "09786547865",
+      "id": 17
+    },
+    {
+      "name": "Neymar Itis",
+      "number": "9765467890",
+      "id": 91
     }
   ]
 }

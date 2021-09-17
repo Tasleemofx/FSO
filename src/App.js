@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
+import contactService from "./Services/contacts"
+
 import AddPerson from './components/Addperson';
 import Filter from './components/Filter';
 import MapPerson from './components/MapPerson';
-import axios from 'axios'
 
 
 function App() {
@@ -11,12 +12,14 @@ function App() {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber]=useState('')
  const hook=()=>{
-   axios.get('http://localhost:3001/contacts')
-   .then(response=>{
-     setPerson(response.data)
-   })
+    contactService
+    .getAll()
+    .then(ret=> {
+      setPerson(ret)
+    })
+    .catch(err=> console.log(err))
  }
-  useEffect(hook, [])
+  useEffect(hook,[person])
   const handleNameChange=(e)=>{
     e.preventDefault()
     setNewName(e.target.value)
@@ -42,17 +45,42 @@ function App() {
       number: newNumber
     }
     setPerson(person.concat(NewContact))
+    contactService
+    .create(NewContact)
+    .then(item=> {
+      console.log(item)
+    })
     setNewName('')
     setNewNumber('')
   }
-  }
+}
   const handleFilter=(e)=>{
     const filterValue = e.target.value
-  const filtered = person.filter(p=> p.name.startsWith(filterValue))
-    setPerson(filtered)
+  const filtered = person.filter(p=> p.name.includes(filterValue))
+  setPerson(filtered)
+  }
+  const handleDelete = (id,name) => {
+    if(window.confirm(`would you like to delete ${name}?`)){
+    // const newperson = person.filter(p => p.id !== id)
+    // setPerson(newperson)
+    contactService.deleteOne(id)
+    .then(response=> console.log(response))
+    }
+  }
+  const handleEdit=(id,name)=>{
+    const newNumber = prompt(` Enter new number for ${name}? or cancel to maintain old number`);
+    const findContact = person.find(p=> p.id===id)
+    if(newNumber){
+    const editedContact = { ...findContact, number: newNumber}
+    contactService.update(id, editedContact)
+    .then(response=> {
+      console.log(response)
+      return response;
+  })
+}
 }
   return (
-    <div>
+    <div className="App">
       <h2>Phonebook</h2>
       Filter: <Filter 
       onChange={handleFilter}
@@ -63,7 +91,11 @@ function App() {
       Namevalue={newName}
       Numvalue={newNumber}/>
       <h2>Numbers</h2>
-      <MapPerson person={person}/>
+      <MapPerson 
+      person={person}
+      handleDelete={handleDelete}
+      handleEdit={handleEdit}
+      />
     </div>
   );
 }
