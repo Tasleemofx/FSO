@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Note from "./components/Note"
 import './App.css';
 import noteService from './services/notes'
+import Notification from "./components/Notification"
+import Footer from './components/Footer';
 
 
 function App() {
@@ -9,6 +11,7 @@ function App() {
   const[notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll]= useState(true)
+  const [alert, setAlert] = useState("Something happened...")
 
   const toggleImportance=(id)=>{
   const note = notes.find(n=> n.id === id)
@@ -20,10 +23,12 @@ function App() {
     setNotes(notes.map(note=> note.id !== id? note: response))
   })
   .catch(error=>{
-    alert(`the note ${note.content} has been deleted from the server`)
-    console.log(error)
-  })
-  setNotes(notes.filter(n=> n.id!== id))
+    setAlert(`the note '${note.content}' has been deleted from the server`)
+    setTimeout(()=>{
+      setAlert(null)
+    }, 5000)
+    setNotes(notes.filter(n => n.id !== id))
+  })  
   }
    const hook =()=>{ 
     noteService
@@ -57,6 +62,8 @@ function App() {
   : notes.filter(note => note.important === true)
   return (
     <div>
+      <Notification message={alert}/>
+
       <h1>Notes</h1>
       <div>
         <button onClick={()=> setShowAll(!showAll)}>
@@ -76,6 +83,7 @@ function App() {
         onChange={handleNoteChange}/>
         <button type="submit">save</button>
       </form>
+      <Footer />
     </div>
      );
 }
