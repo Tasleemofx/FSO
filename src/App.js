@@ -5,21 +5,23 @@ import contactService from "./Services/contacts"
 import AddPerson from './components/Addperson';
 import Filter from './components/Filter';
 import MapPerson from './components/MapPerson';
+import Notification from './components/Notification';
 
 
 function App() {
   const [person, setPerson]= useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber]=useState('')
+  const [alert, setAlert]= useState('')
+  const [alertType, setAlertType] = useState('')
  const hook=()=>{
     contactService
     .getAll()
     .then(ret=> {
       setPerson(ret)
     })
-    .catch(err=> console.log(err))
  }
-  useEffect(hook,[person])
+  useEffect(hook,[alert])
   const handleNameChange=(e)=>{
     e.preventDefault()
     setNewName(e.target.value)
@@ -49,22 +51,51 @@ function App() {
     .create(NewContact)
     .then(item=> {
       console.log(item)
+      setAlert(`${newName} successfully added to phonebook`)
+      setAlertType('success')
+      setTimeout(()=>{
+        setAlert(null)
+      }, 5000)
+    })
+      .catch(err => {
+        setAlert(`${newName} could not be added to phonebook
+        due to ${err}`)
+        setAlertType('error')
+      setTimeout(() => {
+        setAlert(null)
+      }, 5000)
     })
     setNewName('')
     setNewNumber('')
+    
   }
 }
   const handleFilter=(e)=>{
     const filterValue = e.target.value
+    if(filterValue){
   const filtered = person.filter(p=> p.name.includes(filterValue))
   setPerson(filtered)
+    } 
   }
   const handleDelete = (id,name) => {
     if(window.confirm(`would you like to delete ${name}?`)){
-    // const newperson = person.filter(p => p.id !== id)
-    // setPerson(newperson)
     contactService.deleteOne(id)
-    .then(response=> console.log(response))
+    .then(response=> {
+      console.log(response)
+      setAlert(`${name} successfully deleted from phonebook`)
+      setAlertType('error')
+      setTimeout(() => {
+        setAlert(null)
+      }, 5000)
+    })
+      .catch(err => {
+        setAlert(`${name} could not be deleted from phonebook
+        due to ${err}`)
+        setAlertType('error')
+        setTimeout(() => {
+          setAlert(null)
+        }, 5000)
+      })
     }
   }
   const handleEdit=(id,name)=>{
@@ -75,12 +106,18 @@ function App() {
     contactService.update(id, editedContact)
     .then(response=> {
       console.log(response)
+      setAlert(`${findContact.name} successfully edited in phonebook`);
+      setAlertType('success')
+      setTimeout(() => {
+        setAlert(null)
+      }, 5000)
       return response;
   })
 }
 }
   return (
     <div className="App">
+      <Notification message={alert} type={alertType}/>
       <h2>Phonebook</h2>
       Filter: <Filter 
       onChange={handleFilter}
