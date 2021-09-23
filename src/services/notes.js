@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const url = 'http://localhost:3001/notes'
+const url = '/api/notes'
 
 const getAll =()=>{
     const request = axios.get(url)

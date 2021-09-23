@@ -11,7 +11,8 @@ function App() {
   const[notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll]= useState(true)
-  const [alert, setAlert] = useState("Something happened...")
+  const [alert, setAlert] = useState(null)
+  const [alertType, setAlertType] = useState('success')
 
   const toggleImportance=(id)=>{
   const note = notes.find(n=> n.id === id)
@@ -21,9 +22,16 @@ function App() {
   .update(id, changedNote)
   .then(response=>{
     setNotes(notes.map(note=> note.id !== id? note: response))
+    setAlert(`the note '${changedNote.content}' has been 
+    made ${note.important? 'not important':'important'}`)
+    setAlertType('success')
+    setTimeout(() => {
+      setAlert(null)
+    }, 5000)
   })
   .catch(error=>{
-    setAlert(`the note '${note.content}' has been deleted from the server`)
+    setAlert(`the note '${note.content}' does not exist on the server`)
+    setAlertType('error')
     setTimeout(()=>{
       setAlert(null)
     }, 5000)
@@ -50,6 +58,11 @@ function App() {
     .then(response=>{
       setNotes(notes.concat(response))
       setNewNote('')
+      setAlert(`the note '${noteObject.content}' has been added to the server`)
+      setAlertType('success')
+      setTimeout(() => {
+        setAlert(null)
+      }, 5000)
     })
     
   }
@@ -62,7 +75,7 @@ function App() {
   : notes.filter(note => note.important === true)
   return (
     <div>
-      <Notification message={alert}/>
+      <Notification message={alert} type={alertType}/>
 
       <h1>Notes</h1>
       <div>
