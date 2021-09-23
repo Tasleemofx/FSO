@@ -58,7 +58,7 @@ function App() {
     .then(response=>{
       setNotes(notes.concat(response))
       setNewNote('')
-      setAlert(`the note '${noteObject.content}' has been added to the server`)
+      setAlert(`the note '${noteObject.content}' was added`)
       setAlertType('success')
       setTimeout(() => {
         setAlert(null)
